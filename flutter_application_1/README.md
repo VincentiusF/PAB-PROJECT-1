@@ -3,6 +3,6 @@ Project UAS PAB
 Pembagian Tugas Coding
 
 Felix : Register, Keranjang
-Vincentius: 
+Vincentius: Search, detail
 Steven Tan : Home, Favorite
 M Rifqan Zalbina : 
