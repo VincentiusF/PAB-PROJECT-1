@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/keranjang.dart';
+import 'package:flutter_application_1/pages/search.dart'; // Import your search page
 import 'dart:convert'; // For JSON encoding/decoding
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,8 +13,16 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> items = [
-    {'id': 1, 'name': 'VINA VENTISQUERO RESERVA MERLOT 88AG 2021', 'price': 447000},
-    {'id': 2, 'name': 'VINA VENTISQUERO CLASSICO CABERNET SAUVIGNON 2018', 'price': 516000},
+    {
+      'id': 1,
+      'name': 'VINA VENTISQUERO RESERVA MERLOT 88AG 2021',
+      'price': 447000
+    },
+    {
+      'id': 2,
+      'name': 'VINA VENTISQUERO CLASSICO CABERNET SAUVIGNON 2018',
+      'price': 516000
+    },
     {'id': 3, 'name': 'MONTES ALPHA MERLOT', 'price': 516000},
     {'id': 4, 'name': 'CATENA ALAMOS MALBEC', 'price': 447000},
   ];
@@ -33,7 +42,12 @@ class _HomePageState extends State<HomePage> {
     if (index >= 0) {
       cart[index]['quantity'] += 1;
     } else {
-      cart.add({'id': item['id'], 'name': item['name'], 'price': item['price'], 'quantity': 1});
+      cart.add({
+        'id': item['id'],
+        'name': item['name'],
+        'price': item['price'],
+        'quantity': 1
+      });
     }
 
     // Save updated cart back to SharedPreferences
@@ -71,7 +85,8 @@ class _HomePageState extends State<HomePage> {
               height: 200,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/banner.jpg'), // Update with your banner asset
+                  image: AssetImage(
+                      'assets/banner.jpg'), // Update with your banner asset
                   fit: BoxFit.cover,
                 ),
               ),
@@ -90,9 +105,14 @@ class _HomePageState extends State<HomePage> {
                   DropdownButton(
                     value: 'Popularity',
                     items: const [
-                      DropdownMenuItem(value: 'Popularity', child: Text('Popularity')),
-                      DropdownMenuItem(value: 'Price: Low to High', child: Text('Price: Low to High')),
-                      DropdownMenuItem(value: 'Price: High to Low', child: Text('Price: High to Low')),
+                      DropdownMenuItem(
+                          value: 'Popularity', child: Text('Popularity')),
+                      DropdownMenuItem(
+                          value: 'Price: Low to High',
+                          child: Text('Price: Low to High')),
+                      DropdownMenuItem(
+                          value: 'Price: High to Low',
+                          child: Text('Price: High to Low')),
                     ],
                     onChanged: (value) {},
                   ),
@@ -127,10 +147,12 @@ class _HomePageState extends State<HomePage> {
                           child: Container(
                             decoration: BoxDecoration(
                               image: DecorationImage(
-                                image: AssetImage('assets/product${index + 1}.jpg'), // Update with your product images
+                                image: AssetImage(
+                                    'assets/product${index + 1}.jpg'), // Update with your product images
                                 fit: BoxFit.cover,
                               ),
-                              borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(10)),
                             ),
                           ),
                         ),
@@ -162,6 +184,7 @@ class _HomePageState extends State<HomePage> {
                                 onPressed: () => _addToCart(item),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.brown,
+                                  foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(5),
                                   ),
@@ -187,9 +210,19 @@ class _HomePageState extends State<HomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorite'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.favorite), label: 'Favorite'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
+        onTap: (index) {
+          if (index == 1) {
+            // Navigate to Search Page when Search is tapped
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => WineSearchPage()),
+            );
+          }
+        },
       ),
     );
   }

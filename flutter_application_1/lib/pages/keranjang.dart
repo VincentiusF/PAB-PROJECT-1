@@ -81,7 +81,8 @@ class _CartPageState extends State<CartPage> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.brown,
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -118,7 +119,8 @@ class _CartPageState extends State<CartPage> {
                     const Spacer(),
                     const Text(
                       "Cart",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const Spacer(),
                   ],
@@ -158,7 +160,8 @@ class _CartPageState extends State<CartPage> {
             children: [
               Text(
                 "Total: Rp $total",
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               SizedBox(
@@ -174,7 +177,10 @@ class _CartPageState extends State<CartPage> {
                   onPressed: () {},
                   child: const Text(
                     "Checkout",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
                 ),
               ),
@@ -212,7 +218,8 @@ class _CartPageState extends State<CartPage> {
               children: [
                 Text(
                   item['name'],
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 5),
                 Text(
