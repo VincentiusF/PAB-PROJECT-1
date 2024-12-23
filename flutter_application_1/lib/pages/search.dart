@@ -16,6 +16,28 @@ class _WineSearchPageState extends State<WineSearchPage> {
   String selectedPrice = "";
   String selectedCountry = "";
 
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  void _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      selectedType = prefs.getString('selectedType') ?? '';
+      selectedPrice = prefs.getString('selectedPrice') ?? '';
+      selectedCountry = prefs.getString('selectedCountry') ?? '';
+    });
+  }
+
+  void _savePreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('selectedType', selectedType);
+    prefs.setString('selectedPrice', selectedPrice);
+    prefs.setString('selectedCountry', selectedCountry);
+  }
+
   List<Wine> get filteredWine {
     return wineData.where((wine) {
       final matchesSearch = searchQuery.isEmpty ||
@@ -55,6 +77,7 @@ class _WineSearchPageState extends State<WineSearchPage> {
       selectedPrice = "";
       selectedCountry = "";
     });
+    _savePreferences();
   }
 
   void navigateToDetail(Wine wine) {
@@ -131,6 +154,7 @@ class _WineSearchPageState extends State<WineSearchPage> {
                     (value) {
                   setState(() {
                     selectedType = value ?? "";
+                    _savePreferences();
                   });
                 }),
                 const SizedBox(width: 8),
@@ -140,6 +164,7 @@ class _WineSearchPageState extends State<WineSearchPage> {
                     selectedPrice, (value) {
                   setState(() {
                     selectedPrice = value ?? "";
+                    _savePreferences();
                   });
                 }),
                 const SizedBox(width: 8),
@@ -149,6 +174,7 @@ class _WineSearchPageState extends State<WineSearchPage> {
                     selectedCountry, (value) {
                   setState(() {
                     selectedCountry = value ?? "";
+                    _savePreferences();
                   });
                 }),
               ],
@@ -167,6 +193,7 @@ class _WineSearchPageState extends State<WineSearchPage> {
                       onDeleted: () {
                         setState(() {
                           selectedType = "";
+                          _savePreferences();
                         });
                       },
                       deleteIcon: const Icon(Icons.close),
@@ -177,6 +204,7 @@ class _WineSearchPageState extends State<WineSearchPage> {
                       onDeleted: () {
                         setState(() {
                           selectedPrice = "";
+                          _savePreferences();
                         });
                       },
                       deleteIcon: const Icon(Icons.close),
@@ -187,6 +215,7 @@ class _WineSearchPageState extends State<WineSearchPage> {
                       onDeleted: () {
                         setState(() {
                           selectedCountry = "";
+                          _savePreferences();
                         });
                       },
                       deleteIcon: const Icon(Icons.close),
