@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/keranjang.dart';
 import 'package:flutter_application_1/pages/search.dart'; // Import your search page
+import 'package:flutter_application_1/pages/profile_screen.dart'; // Import ProfileScreen
 import 'dart:convert'; // For JSON encoding/decoding
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,6 +27,8 @@ class _HomePageState extends State<HomePage> {
     {'id': 3, 'name': 'MONTES ALPHA MERLOT', 'price': 516000},
     {'id': 4, 'name': 'CATENA ALAMOS MALBEC', 'price': 447000},
   ];
+
+  String _selectedSort = 'Popularity'; // Added state for sorting
 
   Future<void> _addToCart(Map<String, dynamic> item) async {
     final prefs = await SharedPreferences.getInstance();
@@ -57,6 +60,72 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Function to handle sorting
+  void _sortItems(String criterion) {
+    setState(() {
+      _selectedSort = criterion;
+      if (criterion == 'Price: Low to High') {
+        items.sort((a, b) => a['price'].compareTo(b['price']));
+      } else if (criterion == 'Price: High to Low') {
+        items.sort((a, b) => b['price'].compareTo(a['price']));
+      } else {
+        // Assuming 'Popularity' is the default order
+        // If you have a 'popularity' field, sort accordingly
+        // For now, we'll keep the original order
+        items = [
+          {
+            'id': 1,
+            'name': 'VINA VENTISQUERO RESERVA MERLOT 88AG 2021',
+            'price': 447000
+          },
+          {
+            'id': 2,
+            'name': 'VINA VENTISQUERO CLASSICO CABERNET SAUVIGNON 2018',
+            'price': 516000
+          },
+          {'id': 3, 'name': 'MONTES ALPHA MERLOT', 'price': 516000},
+          {'id': 4, 'name': 'CATENA ALAMOS MALBEC', 'price': 447000},
+        ];
+      }
+    });
+  }
+
+  int _selectedIndex = 0; // Added state for BottomNavigationBar
+
+  void _onBottomNavTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        // Current HomePage, do nothing
+        break;
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => WineSearchPage()),
+        );
+        break;
+      case 2:
+        // Navigate to Favorite Page (Assuming you have a FavoritePage)
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => const FavoritePage()),
+        // );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Favorite feature not implemented yet")),
+        );
+        break;
+      case 3:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ProfileScreen()),
+        );
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,6 +141,7 @@ class _HomePageState extends State<HomePage> {
                 MaterialPageRoute(builder: (context) => const CartPage()),
               );
             },
+            tooltip: 'Cart',
           ),
         ],
       ),
@@ -86,7 +156,7 @@ class _HomePageState extends State<HomePage> {
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage(
-                      'assets/banner.jpg'), // Update with your banner asset
+                      'assets/banner.jpg'), // Ensure this asset exists
                   fit: BoxFit.cover,
                 ),
               ),
@@ -102,8 +172,8 @@ class _HomePageState extends State<HomePage> {
                     "Sort by:",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  DropdownButton(
-                    value: 'Popularity',
+                  DropdownButton<String>(
+                    value: _selectedSort,
                     items: const [
                       DropdownMenuItem(
                           value: 'Popularity', child: Text('Popularity')),
@@ -114,7 +184,11 @@ class _HomePageState extends State<HomePage> {
                           value: 'Price: High to Low',
                           child: Text('Price: High to Low')),
                     ],
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      if (value != null) {
+                        _sortItems(value);
+                      }
+                    },
                   ),
                 ],
               ),
@@ -148,7 +222,7 @@ class _HomePageState extends State<HomePage> {
                             decoration: BoxDecoration(
                               image: DecorationImage(
                                 image: AssetImage(
-                                    'assets/product${index + 1}.jpg'), // Update with your product images
+                                    'assets/product${item['id']}.jpg'), // Ensure these assets exist
                                 fit: BoxFit.cover,
                               ),
                               borderRadius: const BorderRadius.vertical(
@@ -172,7 +246,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                               const SizedBox(height: 5),
                               Text(
-                                'Rp ${item['price']}',
+                                'Rp ${item['price'].toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}',
                                 style: const TextStyle(
                                   color: Colors.red,
                                   fontSize: 16,
@@ -200,6 +274,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
+            const SizedBox(height: 20), // Added spacing at the bottom
           ],
         ),
       ),
@@ -207,6 +282,8 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.brown,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white70,
+        currentIndex: _selectedIndex, // Highlight the selected item
+        type: BottomNavigationBarType.fixed, // To show all labels
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
@@ -214,15 +291,7 @@ class _HomePageState extends State<HomePage> {
               icon: Icon(Icons.favorite), label: 'Favorite'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
-        onTap: (index) {
-          if (index == 1) {
-            // Navigate to Search Page when Search is tapped
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => WineSearchPage()),
-            );
-          }
-        },
+        onTap: _onBottomNavTapped,
       ),
     );
   }

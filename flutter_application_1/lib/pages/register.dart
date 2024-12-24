@@ -18,34 +18,61 @@ class _RegisterPagesState extends State<RegisterPages> {
   final TextEditingController _confirmPasswordController = TextEditingController();
 
   Future<void> _registerUser() async {
-    final username = _usernameController.text;
-    final email = _emailController.text;
+    final username = _usernameController.text.trim();
+    final email = _emailController.text.trim();
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
     if (username.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-      _showSnackBar("text field harus diisi!");
+      _showSnackBar("Semua field harus diisi!");
       return;
     }
 
     if (password != confirmPassword) {
-      _showSnackBar("confirmasi password salah");
+      _showSnackBar("Konfirmasi password salah");
+      return;
+    }
+
+    // Optionally, add more validations like email format, password strength, etc.
+    if (!_isValidEmail(email)) {
+      _showSnackBar("Format email tidak valid!");
+      return;
+    }
+
+    if (password.length < 6) {
+      _showSnackBar("Password harus minimal 6 karakter");
       return;
     }
 
     // Save user data to SharedPreferences
     final prefs = await SharedPreferences.getInstance();
+
+    // Check if user already exists
+    final existingUsername = prefs.getString('username');
+    final existingEmail = prefs.getString('email');
+
+    if (existingUsername == username || existingEmail == email) {
+      _showSnackBar("Username atau email sudah digunakan");
+      return;
+    }
+
     await prefs.setString('username', username);
     await prefs.setString('email', email);
     await prefs.setString('password', password);
 
-    _showSnackBar("Registration successful!", success: true);
+    _showSnackBar("Registrasi berhasil!", success: true);
 
-    // Navigate to HomePages after successful registration
-    Navigator.push(
+    // Navigate to LoginPage after successful registration
+    Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const HomePage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
     );
+  }
+
+  bool _isValidEmail(String email) {
+    // Simple email validation
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+    return emailRegex.hasMatch(email);
   }
 
   void _showSnackBar(String message, {bool success = false}) {
@@ -54,6 +81,15 @@ class _RegisterPagesState extends State<RegisterPages> {
       backgroundColor: success ? Colors.green : Colors.red,
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -109,6 +145,7 @@ class _RegisterPagesState extends State<RegisterPages> {
                     filled: true,
                     fillColor: Colors.grey[100],
                   ),
+                  keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -175,7 +212,7 @@ class _RegisterPagesState extends State<RegisterPages> {
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => const LoginPage(),
