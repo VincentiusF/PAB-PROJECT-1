@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/favorite.dart';
 import 'package:flutter_application_1/pages/keranjang.dart';
-import 'package:flutter_application_1/pages/search.dart'; // Import your search page
-import 'package:flutter_application_1/pages/profile_screen.dart'; // Import ProfileScreen
-import 'dart:convert'; // For JSON encoding/decoding
+import 'package:flutter_application_1/pages/search.dart';
+import 'package:flutter_application_1/pages/profile_screen.dart';
+import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -108,13 +109,9 @@ class _HomePageState extends State<HomePage> {
         );
         break;
       case 2:
-        // Navigate to Favorite Page (Assuming you have a FavoritePage)
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const FavoritePage()),
-        // );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Favorite feature not implemented yet")),
+        Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FavoritePage()),
         );
         break;
       case 3:
@@ -287,8 +284,7 @@ class _HomePageState extends State<HomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.favorite), label: 'Favorite'),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorite'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
         onTap: _onBottomNavTapped,
