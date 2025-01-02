@@ -1,6 +1,41 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class FavoritePage extends StatelessWidget {
+class FavoritePage extends StatefulWidget {
+  @override
+  State<FavoritePage> createState() => _FavoritePageState();
+}
+
+class _FavoritePageState extends State<FavoritePage> {
+  List<Map<String, dynamic>> favoriteItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavorites();
+  }
+
+  Future<void> _loadFavorites() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? favoritesData = prefs.getString('favorites');
+    if (favoritesData != null) {
+      setState(() {
+        favoriteItems = List<Map<String, dynamic>>.from(json.decode(favoritesData));
+      });
+    }
+  }
+
+  Future<void> _removeFromFavorites(int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    favoriteItems.removeWhere((item) => item['id'] == id);
+    prefs.setString('favorites', json.encode(favoriteItems));
+    setState(() {});
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Item removed from favorites')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,73 +50,57 @@ class FavoritePage extends StatelessWidget {
           "Favorite",
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
+        backgroundColor: Colors.brown,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Align(
-          alignment: Alignment.topLeft,
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.5,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
-                  blurRadius: 5,
-                  spreadRadius: 1,
-                  offset: Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
-                  child: Image.network(
-                    'https://via.placeholder.com/150', // Replace with the actual image URL
-                    height: 120,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
+      body: favoriteItems.isEmpty
+          ? Center(
+              child: Text(
+                "No items in favorites",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            )
+          : ListView.builder(
+              itemCount: favoriteItems.length,
+              itemBuilder: (context, index) {
+                final item = favoriteItems[index];
+                return Card(
+                  margin: const EdgeInsets.all(8.0),
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "VINA VENTISQUERO CLASSICO CABERNET SAUVIGNON 2018",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: AssetImage(
+                          'lib/images/wine${(index % 4) + 1}.jpg'), // Placeholder image
+                    ),
+                    title: Text(
+                      item['name'],
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
                       ),
-                      SizedBox(height: 4),
-                      Text(
-                        "Maipo Valley, Chile",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Text(
+                      'Rp ${item['price'].toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
+                    ),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => _removeFromFavorites(item['id']),
+                    ),
                   ),
-                ),
-              ],
+                );
+              },
             ),
-          ),
-        ),
-      ),
     );
   }
 }
