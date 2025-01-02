@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/wine.dart';
 import '../data/data.dart';
@@ -15,11 +16,13 @@ class _WineSearchPageState extends State<WineSearchPage> {
   String selectedType = "";
   String selectedPrice = "";
   String selectedCountry = "";
+  List<Map<String, dynamic>> cart = [];
 
   @override
   void initState() {
     super.initState();
     _loadPreferences();
+    _loadCart();
   }
 
   void _loadPreferences() async {
@@ -29,6 +32,30 @@ class _WineSearchPageState extends State<WineSearchPage> {
       selectedPrice = prefs.getString('selectedPrice') ?? '';
       selectedCountry = prefs.getString('selectedCountry') ?? '';
     });
+  }
+
+  void _loadCart() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? cartData = prefs.getString('cart');
+    if (cartData != null) {
+      cart = List<Map<String, dynamic>>.from(json.decode(cartData));
+    }
+    setState(() {});
+  }
+
+  void _addToCart(Wine wine) async {
+    final prefs = await SharedPreferences.getInstance();
+    Map<String, dynamic> item = {
+      'name': wine.name,
+      'price': _parsePrice(wine.price),
+      'quantity': 1
+    };
+
+    setState(() {
+      cart.add(item);
+    });
+
+    prefs.setString('cart', json.encode(cart));
   }
 
   void _savePreferences() async {
@@ -275,7 +302,15 @@ class _WineSearchPageState extends State<WineSearchPage> {
                                           style: TextStyle(color: Colors.red)),
                                       const SizedBox(height: 8),
                                       ElevatedButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          _addToCart(wine);
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                                content: Text(
+                                                    "Wine berhasil ditambahkan ke keranjang")),
+                                          );
+                                        },
                                         style: ElevatedButton.styleFrom(
                                           padding: EdgeInsets.symmetric(
                                               horizontal: 16, vertical: 8),
@@ -291,9 +326,12 @@ class _WineSearchPageState extends State<WineSearchPage> {
                                           width: double.infinity,
                                           child: Center(
                                             child: Text(
-                                              "Beli",
+                                              "Tambah Ke Keranjang",
                                               style: TextStyle(
-                                                  color: Colors.white),
+                                                color: Colors.white,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.normal,
+                                              ),
                                             ),
                                           ),
                                         ),
