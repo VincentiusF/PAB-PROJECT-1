@@ -28,9 +28,10 @@ class _FavoritePageState extends State<FavoritePage> {
 
   Future<void> _removeFromFavorites(int id) async {
     final prefs = await SharedPreferences.getInstance();
-    favoriteItems.removeWhere((item) => item['id'] == id);
+    setState(() {
+      favoriteItems.removeWhere((item) => item['id'] == id);
+    });
     prefs.setString('favorites', json.encode(favoriteItems));
-    setState(() {});
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Item removed from favorites')),
     );
@@ -40,26 +41,19 @@ class _FavoritePageState extends State<FavoritePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          "Favorite",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+        title: const Text(
+          "Favorites",
+          style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.brown,
+        elevation: 1,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: favoriteItems.isEmpty
-          ? Center(
+          ? const Center(
               child: Text(
-                "No items in favorites",
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                "No favorites yet!",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             )
           : ListView.builder(
@@ -67,34 +61,27 @@ class _FavoritePageState extends State<FavoritePage> {
               itemBuilder: (context, index) {
                 final item = favoriteItems[index];
                 return Card(
-                  margin: const EdgeInsets.all(8.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   elevation: 4,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundImage: AssetImage(
-                          'lib/images/wine${(index % 4) + 1}.jpg'), // Placeholder image
+                      backgroundImage: AssetImage('lib/images/wine${item['id']}.jpg'),
                     ),
                     title: Text(
                       item['name'],
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     subtitle: Text(
                       'Rp ${item['price'].toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: const TextStyle(color: Colors.red),
                     ),
                     trailing: IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
+                      icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () => _removeFromFavorites(item['id']),
                     ),
                   ),

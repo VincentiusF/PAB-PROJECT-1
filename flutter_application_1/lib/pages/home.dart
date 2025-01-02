@@ -15,21 +15,40 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> items = [
-    {
-      'id': 1,
-      'name': 'VINA VENTISQUERO RESERVA MERLOT 88AG 2021',
-      'price': 447000
-    },
-    {
-      'id': 2,
-      'name': 'VINA VENTISQUERO CLASSICO CABERNET SAUVIGNON 2018',
-      'price': 516000
-    },
+    {'id': 1, 'name': 'VINA VENTISQUERO RESERVA MERLOT 88AG 2021', 'price': 447000},
+    {'id': 2, 'name': 'VINA VENTISQUERO CLASSICO CABERNET SAUVIGNON 2018', 'price': 516000},
     {'id': 3, 'name': 'MONTES ALPHA MERLOT', 'price': 516000},
     {'id': 4, 'name': 'CATENA ALAMOS MALBEC', 'price': 447000},
   ];
 
   String _selectedSort = 'Popularity';
+
+  Future<void> _addToCart(Map<String, dynamic> item) async {
+    final prefs = await SharedPreferences.getInstance();
+    List<Map<String, dynamic>> cart = [];
+
+    String? cartData = prefs.getString('cart');
+    if (cartData != null) {
+      cart = List<Map<String, dynamic>>.from(json.decode(cartData));
+    }
+
+    int index = cart.indexWhere((cartItem) => cartItem['id'] == item['id']);
+    if (index >= 0) {
+      cart[index]['quantity'] += 1;
+    } else {
+      cart.add({
+        'id': item['id'],
+        'name': item['name'],
+        'price': item['price'],
+        'quantity': 1
+      });
+    }
+
+    prefs.setString('cart', json.encode(cart));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${item['name']} added to cart')),
+    );
+  }
 
   Future<void> _addToFavorites(Map<String, dynamic> item) async {
     final prefs = await SharedPreferences.getInstance();
@@ -40,7 +59,10 @@ class _HomePageState extends State<HomePage> {
       favorites = List<Map<String, dynamic>>.from(json.decode(favoritesData));
     }
 
-    if (!favorites.any((fav) => fav['id'] == item['id'])) {
+    bool isAlreadyFavorite =
+        favorites.any((favoriteItem) => favoriteItem['id'] == item['id']);
+
+    if (!isAlreadyFavorite) {
       favorites.add(item);
       prefs.setString('favorites', json.encode(favorites));
       ScaffoldMessenger.of(context).showSnackBar(
@@ -51,6 +73,17 @@ class _HomePageState extends State<HomePage> {
         SnackBar(content: Text('${item['name']} is already in favorites')),
       );
     }
+  }
+
+  void _sortItems(String criterion) {
+    setState(() {
+      _selectedSort = criterion;
+      if (criterion == 'Price: Low to High') {
+        items.sort((a, b) => a['price'].compareTo(b['price']));
+      } else if (criterion == 'Price: High to Low') {
+        items.sort((a, b) => b['price'].compareTo(a['price']));
+      }
+    });
   }
 
   int _selectedIndex = 0;
@@ -120,6 +153,37 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Sort by:",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  DropdownButton<String>(
+                    value: _selectedSort,
+                    items: const [
+                      DropdownMenuItem(
+                          value: 'Popularity', child: Text('Popularity')),
+                      DropdownMenuItem(
+                          value: 'Price: Low to High',
+                          child: Text('Price: Low to High')),
+                      DropdownMenuItem(
+                          value: 'Price: High to Low',
+                          child: Text('Price: High to Low')),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        _sortItems(value);
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -132,7 +196,7 @@ class _HomePageState extends State<HomePage> {
                 itemCount: items.length,
                 itemBuilder: (context, index) {
                   final item = items[index];
-                  final imageIndex = index + 1; // Calculate the image number
+                  final imageIndex = index + 1;
                   return Card(
                     elevation: 4,
                     shape: RoundedRectangleBorder(
@@ -142,31 +206,16 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: Stack(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: AssetImage(
-                                        'lib/images/wine$imageIndex.jpg'),
-                                    fit: BoxFit.cover,
-                                  ),
-                                  borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(10)),
-                                ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(
+                                    'lib/images/wine$imageIndex.jpg'),
+                                fit: BoxFit.cover,
                               ),
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: IconButton(
-                                  icon: const Icon(
-                                    Icons.favorite_border,
-                                    color: Colors.red,
-                                  ),
-                                  onPressed: () => _addToFavorites(item),
-                                ),
-                              ),
-                            ],
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(10)),
+                            ),
                           ),
                         ),
                         Padding(
@@ -192,6 +241,27 @@ class _HomePageState extends State<HomePage> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
+                              const SizedBox(height: 5),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () => _addToCart(item),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.brown,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                    ),
+                                    child: const Text('Add to Cart'),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.favorite_border, color: Colors.red),
+                                    onPressed: () => _addToFavorites(item),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),
@@ -201,6 +271,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
