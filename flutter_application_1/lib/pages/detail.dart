@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/wine.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class WineDetailScreen extends StatelessWidget {
   final Wine wine;
@@ -70,55 +71,6 @@ class WineDetailScreen extends StatelessWidget {
                 style: const TextStyle(fontSize: 16, height: 1.4),
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(107, 10, 10, 1),
-                  minimumSize: const Size.fromHeight(50),
-                ),
-                onPressed: () async {
-                  final prefs = await SharedPreferences.getInstance();
-                  List<String> cart = prefs.getStringList('cart') ?? [];
-
-                  cart.add(wine.name);
-
-                  await prefs.setStringList('cart', cart);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content:
-                            Text("Wine berhasil ditambahkan ke keranjang")),
-                  );
-                },
-                child: const Text(
-                  'Tambah ke Keranjang',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(107, 10, 10, 1),
-                  minimumSize: const Size.fromHeight(50),
-                ),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("Pembelian wine sedang diproses")),
-                  );
-                },
-                child: const Text(
-                  'Beli Sekarang',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
             ],
           ),
         ),
