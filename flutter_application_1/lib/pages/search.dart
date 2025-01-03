@@ -122,14 +122,12 @@ class _WineSearchPageState extends State<WineSearchPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("Search"),
-        titleTextStyle: const TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
-        centerTitle: true,
-        backgroundColor: Color.fromARGB(255, 107, 10, 10),
+        titleTextStyle: const TextStyle(fontSize: 20, color: Colors.white),
+        backgroundColor: Colors.brown,
         leading: Container(
           margin: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: Color.fromARGB(255, 107, 10, 10),
+            color: Colors.brown,
             borderRadius: BorderRadius.circular(8.0),
           ),
           child: IconButton(
@@ -319,8 +317,7 @@ class _WineSearchPageState extends State<WineSearchPage> {
                                             color: Colors.white,
                                             fontSize: 16,
                                           ),
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 107, 10, 10),
+                                          backgroundColor: Colors.brown,
                                         ),
                                         child: Container(
                                           width: double.infinity,

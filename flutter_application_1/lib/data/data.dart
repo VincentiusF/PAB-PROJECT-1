@@ -46,7 +46,7 @@ List<Wine> wineData = [
       region: "Bordeaux",
       country: "France",
       price: "498.000",
-      imagePath: "lib/images/wine5.jpeg",
+      imagePath: "lib/images/wine5.jpg",
       type: "white",
       description:
           "Michel Lynch Bordeaux 2020 adalah wine merah yang diproduksi di wilayah Bordeaux, Prancis, oleh produsen terkenal Michel Lynch. Wine ini terbuat dari campuran anggur khas Bordeaux, dengan dominasi varietas Cabernet Sauvignon dan Merlot, yang memberikan keseimbangan antara kekuatan dan kelembutan rasa.",

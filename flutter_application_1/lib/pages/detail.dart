@@ -13,10 +13,8 @@ class WineDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detail'),
-        titleTextStyle: const TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
-        centerTitle: true,
-        backgroundColor: const Color.fromRGBO(107, 10, 10, 1),
+        titleTextStyle: const TextStyle(fontSize: 20, color: Colors.white),
+        backgroundColor: Colors.brown,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
