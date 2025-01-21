@@ -207,9 +207,12 @@ class _CartPageState extends State<CartPage> {
             height: 70,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Colors.grey[300],
+              color: Colors.grey[300],  
+              image: DecorationImage(
+                image: AssetImage('lib/images/${item['image']}'), // Use image from the item map
+                // fit: BoxFit.cover,
+              ),
             ),
-            child: const Icon(Icons.image, size: 50, color: Colors.grey),
           ),
           const SizedBox(width: 16),
           Expanded(

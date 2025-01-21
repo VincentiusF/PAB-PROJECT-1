@@ -15,10 +15,30 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> items = [
-    {'id': 1, 'name': 'VINA VENTISQUERO RESERVA MERLOT 88AG 2021', 'price': 447000},
-    {'id': 2, 'name': 'VINA VENTISQUERO CLASSICO CABERNET SAUVIGNON 2018', 'price': 516000},
-    {'id': 3, 'name': 'MONTES ALPHA MERLOT', 'price': 516000},
-    {'id': 4, 'name': 'CATENA ALAMOS MALBEC', 'price': 447000},
+    {
+      'id': 1,
+      'name': 'VINA VENTISQUERO RESERVA MERLOT 88AG 2021',
+      'price': 447000,
+      'image': 'wine1.jpg'
+    },
+    {
+      'id': 2,
+      'name': 'VINA VENTISQUERO CLASSICO CABERNET SAUVIGNON 2018',
+      'price': 516000,
+      'image': 'wine2.jpg'
+    },
+    {
+      'id': 3,
+      'name': 'MONTES ALPHA MERLOT',
+      'price': 516000,
+      'image': 'wine3.jpg',
+    },
+    {
+      'id': 4,
+      'name': 'CATENA ALAMOS MALBEC',
+      'price': 447000,
+      'image': 'wine4.jpg'
+    },
   ];
 
   String _selectedSort = 'Popularity';
@@ -39,6 +59,7 @@ class _HomePageState extends State<HomePage> {
       cart.add({
         'id': item['id'],
         'name': item['name'],
+        'image': item['image'],
         'price': item['price'],
         'quantity': 1
       });
